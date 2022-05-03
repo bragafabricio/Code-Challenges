@@ -23,7 +23,7 @@ class Result {
      * The function accepts 2D_STRING_ARRAY queries as parameter.
      */
     
-public static class TrieNode {
+    public static class TrieNode {
         private HashMap<Character, TrieNode> children = new HashMap<>();
         private int times = 0;
     }
