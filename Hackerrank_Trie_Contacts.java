@@ -2,6 +2,18 @@
 //This solution exceeds time limit for cases 3 and 4 also
 
 
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
 class Result {
 
     /*
@@ -10,43 +22,31 @@ class Result {
      * The function is expected to return an INTEGER_ARRAY.
      * The function accepts 2D_STRING_ARRAY queries as parameter.
      */
-     
-    public static class TrieNode {
+    
+public static class TrieNode {
         private HashMap<Character, TrieNode> children = new HashMap<>();
-        private int times;
-        
-        public TrieNode(){
-            times = 1;
-        }        
+        private int times = 0;
     }
     
     public static class Trie {
-        TrieNode root;
+        TrieNode root = new TrieNode();
         
-        public Trie(){
-            root = new TrieNode();
-        }
         public void insert(String word) {
             TrieNode current = root;
             for (char l: word.toCharArray()) {
-                if(!current.children.containsKey(l)){
-                    TrieNode newNode = new TrieNode();
-                    current.children.put(l, newNode);
-                    current = newNode;
-                } else {
-                    current = current.children.get(l);
-                    current.times++;
-                }
+                current.children.putIfAbsent(l, new TrieNode());
+                current = current.children.get(l);
+                current.times++;
             }
         }
         
-        public int find(String word) {
+        public int find(String prefix) {
             TrieNode current = root;
-            for (char ch : word.toCharArray()) {
-                if (!current.children.containsKey(ch)) {
+            for (char l : prefix.toCharArray()) {
+                current = current.children.get(l);
+                if (current == null) {
                     return 0;
                 }
-                current = current.children.get(ch);
             }
             return current.times;
         }
@@ -69,4 +69,38 @@ class Result {
         return results;
     }
 
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int queriesRows = Integer.parseInt(bufferedReader.readLine().trim());
+
+        List<List<String>> queries = new ArrayList<>();
+
+        IntStream.range(0, queriesRows).forEach(i -> {
+            try {
+                queries.add(
+                    Stream.of(bufferedReader.readLine().replaceAll("\\s+$", "").split(" "))
+                        .collect(toList())
+                );
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        List<Integer> result = Result.contacts(queries);
+
+        bufferedWriter.write(
+            result.stream()
+                .map(Object::toString)
+                .collect(joining("\n"))
+            + "\n"
+        );
+
+        bufferedReader.close();
+        bufferedWriter.close();
+    }
 }
