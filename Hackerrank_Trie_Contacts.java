@@ -1,5 +1,5 @@
 //Hackerrank - Trie - Contacts
-//This solution exceeds time limit for cases 3 and 4
+//This solution exceeds time limit for cases 3 and 4 also
 
 
 class Result {
@@ -16,7 +16,7 @@ class Result {
         private int times;
         
         public TrieNode(){
-            times = 0;
+            times = 1;
         }        
     }
     
@@ -29,8 +29,14 @@ class Result {
         public void insert(String word) {
             TrieNode current = root;
             for (char l: word.toCharArray()) {
-                current = current.children.computeIfAbsent(l, addNode -> new TrieNode());
-                current.times ++;
+                if(!current.children.containsKey(l)){
+                    TrieNode newNode = new TrieNode();
+                    current.children.put(l, newNode);
+                    current = newNode;
+                } else {
+                    current = current.children.get(l);
+                    current.times++;
+                }
             }
         }
         
